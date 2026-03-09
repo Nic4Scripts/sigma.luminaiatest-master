@@ -1,22 +1,20 @@
--- [[ LUMINAIA MASTER SOURCE | V1.1 FIXED ]] --
+-- [[ LUMINAIA MASTER SOURCE | V1.2 FIXED ]] --
 local Luminaia = {
     Windows = {},
     Flags = {},
     Toggled = false,
     User = "Prizmm",
-    Accent = Color3.fromRGB(255, 255, 255) -- PURE WHITE
+    Accent = Color3.fromRGB(255, 255, 255)
 }
 
 local UIS = game:GetService("UserInputService")
 
--- Drawing Helper
 function Luminaia.Draw(type, properties)
     local obj = Drawing.new(type)
     for prop, val in pairs(properties) do obj[prop] = val end
     return obj
 end
 
--- [[ THE FIXED WINDOW CONSTRUCTOR ]] --
 function Luminaia:CreateWindow(name)
     local Window = {
         Elements = {},
@@ -27,7 +25,7 @@ function Luminaia:CreateWindow(name)
     local Count = #self.Windows
     local XPos = 50 + (Count * 110)
 
-    -- The Pillar (ZIndex 100 to ensure it shows over the game)
+    -- FIXED THE TYPO BELOW (Line 41-44 area)
     Window.Drawings = {
         Main = Luminaia.Draw("Square", {
             Size = Vector2.new(95, 1000), 
@@ -41,7 +39,7 @@ function Luminaia:CreateWindow(name)
         Header = Luminaia.Draw("Square", {
             Size = Vector2.new(95, 30), 
             Position = Vector2.new(XPos, 50),
-            Color = Color3.fromRGB(25), 25, 25), 
+            Color = Color3.fromRGB(25, 25, 25), -- FIXED PARENTHESIS HERE
             Filled = true, 
             Visible = false,
             ZIndex = 101
@@ -58,7 +56,6 @@ function Luminaia:CreateWindow(name)
         })
     }
 
-    -- [[ ADD TOGGLE ]] --
     function Window:AddToggle(text, flag, default, callback)
         local Toggle = { Drawings = {} }
         local Y = Window.Drawings.Main.Position.Y + Window.YOffset
@@ -76,23 +73,20 @@ function Luminaia:CreateWindow(name)
         Toggle.Drawings = {Label}
         Luminaia.Flags[flag] = default
         
-        -- Logic
-        task.spawn(function()
-            UIS.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 and Window.Visible then
-                    local m = UIS:GetMouseLocation()
-                    if m.X >= Label.Position.X and m.X <= Label.Position.X + 85 and m.Y >= Label.Position.Y and m.Y <= Label.Position.Y + 14 then
-                        Luminaia.Flags[flag] = not Luminaia.Flags[flag]
-                        Label.Color = Luminaia.Flags[flag] and Luminaia.Accent or Color3.new(0.7, 0.7, 0.7)
-                        callback(Luminaia.Flags[flag])
-                    end
+        UIS.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 and Window.Visible then
+                local m = UIS:GetMouseLocation()
+                if m.X >= Label.Position.X and m.X <= Label.Position.X + 85 and m.Y >= Label.Position.Y and m.Y <= Label.Position.Y + 14 then
+                    Luminaia.Flags[flag] = not Luminaia.Flags[flag]
+                    Label.Color = Luminaia.Flags[flag] and Luminaia.Accent or Color3.new(0.7, 0.7, 0.7)
+                    callback(Luminaia.Flags[flag])
                 end
-            end)
+            end
         end)
         
         Window.YOffset = Window.YOffset + 18
         table.insert(Window.Elements, Toggle)
-        return Toggle -- RETURN 1
+        return Toggle
     end
 
     function Window:SetVisible(state)
@@ -104,11 +98,11 @@ function Luminaia:CreateWindow(name)
     end
 
     table.insert(Luminaia.Windows, Window)
-    return Window -- CRITICAL RETURN 2 (The one you were missing!)
+    return Window
 end
 
 function Luminaia:Notify(msg)
-    warn("[LUMINAIA] " .. msg)
+    print("[LUMINAIA] " .. msg)
 end
 
 function Luminaia:ToggleUI()
@@ -118,11 +112,10 @@ function Luminaia:ToggleUI()
     end
 end
 
--- Right Shift Keybind
 UIS.InputBegan:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.RightShift then
         Luminaia:ToggleUI()
     end
 end)
 
-return Luminaia -- CRITICAL RETURN 3
+return Luminaia
